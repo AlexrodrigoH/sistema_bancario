@@ -1,3 +1,4 @@
 def novo_cliente(arquivo):
-    arquivo = open(arquivo, "w")
+    #arquivo = open("clientes/" + arquivo, "w")
+    arquivo = open(f"clientes/{arquivo}", "w")
     arquivo.close()
