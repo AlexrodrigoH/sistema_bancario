@@ -4,7 +4,7 @@ import valida_entrada
 def opcao_menu(menu):
     if menu == 1:
         while True:
-            nome = input("Nome completo: ").strip().upper().split(" ")
+            nome = input("Nome completo: ").strip().upper().split()
             escolha = valida_entrada.validar_str(nome)
             if escolha:
                 nome = " ".join(nome)

@@ -9,7 +9,9 @@ def validar_str(validacao):
             return False
     return True
 def validar_num(valido_num):
-    if not valido_num.isdigit():
+    if valido_num == "":
+             return False
+    elif not valido_num.isdigit():
         print("Somente numeros!\n")
         return False
     valido_num = int(valido_num)
