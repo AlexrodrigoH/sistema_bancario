@@ -11,9 +11,9 @@ while True:
             "5 - Sair/Finalizar")
       menu = input("Opcao: ").strip().lower()
       menu = valida_entrada.validar_num(menu)
-      print("Validar entrada: ", menu)
+      print("============Validar entrada: ", menu)
       sair = opcoes_menu.opcao_menu(menu)
-      print("Tetse menu -> ", type(menu))
+      print("============Teste menu -> ", menu)
       if sair == False:
             print("ENCERRANDO BANCO!\n")
             break
