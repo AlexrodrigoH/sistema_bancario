@@ -5,7 +5,7 @@ def validar_str(validacao):
         if palavra_valido.isalpha():
             continue
         else:
-            print("Nome invalido! Inserir somente nomes validos!!\n")
+            print("\nNome invalido! Inserir somente nomes validos!!\n")
             return False
     return True
 def validar_num(valido_num):
