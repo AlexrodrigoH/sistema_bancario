@@ -14,7 +14,7 @@ while True:
       print("============Validar entrada: ", menu)
       sair = opcoes_menu.opcao_menu(menu)
       print("============Teste menu -> ", menu)
-      if sair == False:
+      if sair == False
             print("ENCERRANDO BANCO!\n")
             break
       else:
