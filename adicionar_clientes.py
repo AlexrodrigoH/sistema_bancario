@@ -16,3 +16,7 @@ def pesquisar_clientes(nome):
     except FileNotFoundError:
         print(f"Cliente {nome} nao encontrado!\n")
         return False
+def adiciona_saldo(nome, valor):
+    caminho = open(f"clientes/{nome}/saldo.txt", "w")
+    caminho.write(str(valor))
+    caminho.close()

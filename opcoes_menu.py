@@ -40,6 +40,31 @@ def opcao_menu(menu):
                                 continue
                             else:
                                 break
+                        if opcao == 1:
+                            while True:
+                                try:
+                                    deposito = input("Valor do deposito: ").strip()
+                                    valor = float(deposito)
+                                except ValueError:
+                                    print("Somente numeros!\n")
+                                    continue
+                                if valor <=0:
+                                    print("Valor deve ser positivo!\n")
+                                    continue
+                                else:
+                                    new_saldo = adicionar_clientes.pesquisar_clientes(nome)
+                                    if new_saldo:
+                                        caminho = open(f"clientes/{nome}/saldo.txt", "r")
+                                        saldo = caminho.read()
+                                        caminho.close()
+                                        if saldo == "":
+                                            saldo = 0
+                                        saldo = float(saldo)
+                                        valor += saldo
+                                    adicionar_clientes.adiciona_saldo(nome, valor)
+                                    print(f"Deposito de R${deposito} realizado com sucesso!\n")
+
+                                    break
                         return print("Funcao ainda nao implementada!\n")
             else:
                 print("===========Teste saida de funcao teste submenu!\n")
