@@ -12,7 +12,7 @@ jobs:
               with:
                 python-version: '3.x'
             - name: Install dependencies
-              run: python -- version
+              run: python --version
             - name: verifica sintaxe
               run:
                 python -m compileall .
