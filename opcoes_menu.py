@@ -62,9 +62,46 @@ def opcao_menu(menu):
                                         saldo = float(saldo)
                                         valor += saldo
                                     adicionar_clientes.adiciona_saldo(nome, valor)
+                                    adicionar_clientes.registro_para_extrato(nome, deposito, "deposito", valor)
                                     print(f"Deposito de R${deposito} realizado com sucesso!\n")
 
                                     break
+                        elif opcao == 2:
+                            while True:
+                                try:
+                                    saque = input("Valor a sacar: R$").strip()
+                                    valor = float(saque)
+                                except ValueError:
+                                    print("Digite apenas numeros!\n")
+                                    continue
+                                if valor <= 0:
+                                    print("Valor deve ser positivo!\n")
+                                    continue
+                                else:
+                                    new_saldo = adicionar_clientes.pesquisar_clientes(nome)
+                                    if new_saldo:
+                                        caminho = open(f"clientes/{nome}/saldo.txt", "r")
+                                        saldo = caminho.read()
+                                        caminho.close()
+                                        if saldo == "":
+                                            saldo = 0
+                                            saldo = float(saldo)
+                                        if valor > float(saldo):
+                                            print("Saldo insuficiente!\n")
+                                            continue
+                                        else:
+                                            valor = float(saldo) - valor
+                                            adicionar_clientes.adiciona_saldo(nome, valor)
+                                            print(f"Saque de R${saque} realizado com sucesso!\n")
+                                            adicionar_clientes.registro_para_extrato(nome, saque, "saque", valor)
+                                            break
+                        elif opcao == 3:
+                            extrato = adicionar_clientes.extrato(nome)
+                            if extrato == "":
+                                print("Nao ha movimentacoes!\n")
+                            else:
+                                print(f"Extrato do cliente {nome}:\n{extrato}\n")
+                                continue
                         return print("Funcao ainda nao implementada!\n")
             else:
                 print("===========Teste saida de funcao teste submenu!\n")
