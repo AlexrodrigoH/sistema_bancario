@@ -1,3 +1,4 @@
+import os
 import adicionar_clientes
 import valida_entrada
 
@@ -88,7 +89,8 @@ def opcao_menu(menu):
                                             saldo = float(saldo)
                                         if valor > float(saldo):
                                             print("Saldo insuficiente!\n")
-                                            continue
+                                            print(f"Saldo atual: R${float(saldo):.2f}\n")
+                                            break
                                         else:
                                             valor = float(saldo) - valor
                                             adicionar_clientes.adiciona_saldo(nome, valor)
@@ -102,11 +104,17 @@ def opcao_menu(menu):
                             else:
                                 print(f"Extrato do cliente {nome}:\n{extrato}\n")
                                 continue
-                        return print("Funcao ainda nao implementada!\n")
-            else:
-                print("===========Teste saida de funcao teste submenu!\n")
-                break
-    elif menu == 5:
+                        elif opcao == 4:
+                            print("Voltando ao menu principal!\n")
+                            return True
+    elif menu == 3:
+        clientes = os.listdir("clientes")
+        print(f"\nClientes cadastrados: {len(clientes)}\n")
+        posicao = 1
+        for lista in clientes:
+            print(f"{posicao} - {clientes[posicao - 1]}")
+            posicao+= 1
+    elif menu == 4:
         print("\nFINALIZANDO BANCO IMAGINARIO\n")
         print("\n== FIM DA EXECUCAO TESTE ==\n")
         return False
