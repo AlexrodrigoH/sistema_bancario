@@ -125,7 +125,10 @@ def opcao_menu(menu):
         print(f"\nClientes cadastrados: {len(clientes)}\n")
         posicao = 1
         for lista in clientes:
-            print(f"{posicao} - {clientes[posicao - 1]}")
+            arquivo = open(f"clientes/{clientes[posicao - 1]}/saldo.txt", "r")
+            saldo_geral = arquivo.read()
+            arquivo.close()
+            print(f"{posicao} - {clientes[posicao - 1]} \nSaldo: R${float(saldo_geral):.2f}\n")
             posicao+= 1
     elif menu == 4:
         print("\nFINALIZANDO BANCO IMAGINARIO\n")

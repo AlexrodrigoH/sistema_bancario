@@ -5,6 +5,7 @@ def novo_cliente(arquivo):
     #arquivo = open("clientes/" + arquivo, "w")
     os.mkdir(f"clientes/{arquivo}")
     caminho = open(f"clientes/{arquivo}/saldo.txt", "w")
+    caminho.write("0")
     caminho.close()
     caminho = open(f"clientes/{arquivo}/extrato.txt", "w")
     caminho.close()
