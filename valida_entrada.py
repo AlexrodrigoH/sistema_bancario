@@ -15,8 +15,7 @@ def validar_num(valido_num):
         print("Somente numeros!\n")
         return False
     valido_num = int(valido_num)
-    if valido_num <= 0 or valido_num > 4:
-            print("ERROR! Menu possui 4 opcoes!\n")
-            return False
-    else:
-         return valido_num
+    if valido_num <= 0:
+        print("ERROR! Somente numeros positivos!\n")
+        return False
+    return valido_num
