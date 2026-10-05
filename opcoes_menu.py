@@ -16,13 +16,26 @@ def opcao_menu(menu):
                 continue
     elif menu == 2:
         while True:
-            print("\nInforme o nome do cliente que deseja pesquisar: \n")
-            nome = input("Nome completo: ").strip().upper().split()
-            passou = valida_entrada.validar_str(nome)
+            print("\nInforme o nome do cliente ou numero de cadastro: \n")
+            nome_indice = input("Nome completo/indice: ").strip().upper()
+            if nome_indice.isdigit():
+                passou_num = valida_entrada.validar_num(nome_indice)
+                passou = True
+            else:
+                nome = nome_indice.split()
+                passou = valida_entrada.validar_str(nome)
             if passou:
-                nome = " ".join(nome)
+                nome = " ".join(nome_indice)
+                if passou_num:
+                    clientes = os.listdir("clientes")
+                    if int(nome_indice) > len(clientes):
+                        print("Indice nao encontrado!\n")
+                        continue
+                    else:
+                        nome = clientes[int(nome_indice) - 1]
+                else:
+                    nome = nome_indice
                 cliente = adicionar_clientes.pesquisar_clientes(nome)
-
                 if not cliente:
                     print("Cliente nao encontrado!\n")
                     return True
