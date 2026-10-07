@@ -3,6 +3,7 @@ import adicionar_clientes
 import valida_entrada
 
 def opcao_menu(menu):
+    #adiciona novos clientes, caso o cliente ja exista, ele nao sera adicionado.
     if menu == 1:
         while True:
             nome = input("Nome completo: ").strip().upper().split()
@@ -14,6 +15,8 @@ def opcao_menu(menu):
                 return True
             else:
                 continue
+    #Busca o cliente pelo nome ou pelo indice, caso seja digitado um numero, 
+    #ele busca pelo indice, caso seja digitado um nome, ele busca pelo nome.
     elif menu == 2:
         while True:
             print("\nInforme o nome do cliente ou numero de cadastro: \n")
@@ -41,6 +44,8 @@ def opcao_menu(menu):
                     return True
                 else:
                     print(f"Cliente {nome} encontrado!\n")
+                    #submenu do cliente, onde ele pode fazer deposito, 
+                    #saque, ver extrato ou voltar ao menu principal.
                     while True:
                         print("MENU DO CLIENTE: \n" 
                         "1 - Deposito\n"
@@ -124,12 +129,55 @@ def opcao_menu(menu):
         clientes = os.listdir("clientes")
         print(f"\nClientes cadastrados: {len(clientes)}\n")
         posicao = 1
-        for lista in clientes:
-            arquivo = open(f"clientes/{clientes[posicao - 1]}/saldo.txt", "r")
-            saldo_geral = arquivo.read()
-            arquivo.close()
-            print(f"{posicao} - {clientes[posicao - 1]} \nSaldo: R${float(saldo_geral):.2f}\n")
-            posicao+= 1
+        teste_dicionario = []
+        while True:
+            print("1 - Listar clientes\n"
+                  "2 - Selecionar cliente\n"
+                  "3 - Voltar ao menu principal\n")
+            while True:
+                opcao_menu_3 = input("Opcao do menu-> ").strip().upper()
+                opcao_menu_3 = valida_entrada.validar_num(opcao_menu_3)
+                if not opcao_menu_3:
+                    continue
+                else:
+                    break
+            if opcao_menu_3 == 1:
+                for lista in clientes:
+                    arquivo = open(f"clientes/{lista}/saldo.txt", "r")
+                    saldo_geral = arquivo.read()
+                    arquivo.close()
+                    print(f"{posicao} - {lista} \n") #Saldo: R${float(saldo_geral):.2f}\n")
+                    posicao+= 1
+                    teste_dicionario.append({"nome": lista, "saldo": saldo_geral})
+            elif opcao_menu_3 == 2:
+                while True:
+                    indice_cliente = input("Digite o numero/nome do cliente: ").strip().upper()
+                    if indice_cliente.isdigit():
+                        passou_num = valida_entrada.validar_num(indice_cliente)
+                        if not passou_num:
+                            continue
+                        else:
+                            if int(indice_cliente) > len(clientes):
+                                print("Indice nao encontrado!\n")
+                                continue
+                            else:
+                                print(f"\nCliente selecionado: {teste_dicionario[int(indice_cliente) - 1]['nome']}\nSALDO: R${float(teste_dicionario[int(indice_cliente) - 1]['saldo']):.2f}\n")  # Exemplo: selecionando o cliente
+                                break
+                    else:
+                        passou_num = indice_cliente.split()
+                        permitido = valida_entrada.validar_str(passou_num)
+                        if not permitido:
+                            continue
+                        if not adicionar_clientes.pesquisar_clientes(indice_cliente):
+                            print("Nome de cliente incorreto ou nao cadastrado!")
+                            continue
+                        else:
+                            for nomes in teste_dicionario:
+                                if nomes["nome"] == indice_cliente:
+                                    print(f"\n Cliente: {nomes['nome']}"
+                                          f"\n SALDO: R$ {float(nomes['saldo'])}")
+                                    break
+                    break
     elif menu == 4:
         print("\nFINALIZANDO BANCO IMAGINARIO\n")
         print("\n== FIM DA EXECUCAO TESTE ==\n")
