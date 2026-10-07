@@ -158,7 +158,7 @@ def opcao_menu(menu):
                             continue
                         else:
                             if int(indice_cliente) > len(clientes):
-                                print("Indice nao encontrado!\n")
+                                print("Indeice nao encontrado!\n")
                                 continue
                             else:
                                 print(f"\nCliente selecionado: {teste_dicionario[int(indice_cliente) - 1]['nome']}\nSALDO: R${float(teste_dicionario[int(indice_cliente) - 1]['saldo']):.2f}\n")  # Exemplo: selecionando o cliente
