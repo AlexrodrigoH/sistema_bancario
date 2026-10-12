@@ -27,26 +27,7 @@ def pesquisa_clientes(nome):
         for pessoa in conteudo["clientes"]:
                 if pessoa["nome"] == nome:
                     return nome
-def adiciona_saldo(nome, valor, tipo_transacao):
-    with open("local_clientes/dados_clientes.json", "r", encoding="utf-8") as arquivo:
-        clientes = json.load(arquivo)
-    flag = False
-    for pessoa in clientes["clientes"]:
-        if pessoa["nome"] == nome:
-            if tipo_transacao == "saque":
-                pessoa["saldo"] -= valor
-            else:pessoa["saldo"] += valor
-            data = datetime.now().strftime("%d/%m/%y - %H:%M")
-            pessoa["extrato"].append({"data": data, "tipo": tipo_transacao, "valor": valor})
-            flag = True
-    if not flag: 
-        print("Saque nao reconhercido!\n")
-        return False
-    with open(f"local_clientes/dados_clientes.json", "w", encoding="utf-8") as arquivo:
-        json.dump(clientes, arquivo, indent=4, ensure_ascii=False)
-
-def extrato(nome):
-    caminho = open(f"clientes/{nome}/extrato.txt", "r")
-    ler_arquivo = caminho.read()
-    caminho.close()
-    return ler_arquivo
+def retorna_conteudo():
+     with open("local_clientes/dados_clientes.json", "r", encoding="utf-8") as arquivo:
+          dados_arquivo = json.load(arquivo)
+          return dados_arquivo

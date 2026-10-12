@@ -2,6 +2,7 @@ import os
 import adicionar_clientes
 import valida_entrada
 import json
+from datetime import datetime
 
 def opcao_menu(menu):
     #adiciona novos clientes, caso o cliente ja exista, ele nao sera adicionado.
@@ -23,26 +24,23 @@ def opcao_menu(menu):
                 print("\nInforme o nome do cliente ou numero de cadastro: \n")
                 nome_indice = input("Nome completo/indice: ").strip().upper()
                 passou = False
-                with open("local_clientes/dados_clientes.json", "r", encoding="utf-8") as arquivo:
-                    nome_ind = json.load(arquivo)
-                print("\nANTES DO IF DIGITO\n")
+                nome_ind = adicionar_clientes.retorna_conteudo()
+                #print("\nANTES DO IF DIGITO\n")
                 if nome_indice.isdigit():
-                    print("\nENTROU NO IF DIGITO\n")
+                    #print("\nENTROU NO IF DIGITO\n")
                     digito_valido = valida_entrada.validar_num(nome_indice)
                     tam = len(nome_ind["clientes"])
                     if int(nome_indice) < 1 or int(nome_indice) > tam:
                         print(f"Indice invalido! Total de indices cadastrados: {tam}")
                         continue
                     elif digito_valido:
-                            nome = nome_ind["clientes"][int(nome_indice)-1]["nome"]
+                            nome_indice = nome_ind["clientes"][int(nome_indice)-1]["nome"]
                             passou = True
                             break
                     else:
                         continue
                 palavra_valida = valida_entrada.validar_str(nome_indice)
-                print("\nANTES DO IF PALAVRA\n")
                 if palavra_valida:
-                    print("\nDENTRO DO IF PALAVRA\n")
                     teste_nome = False
                     for pessoa in nome_ind["clientes"]:
                         if pessoa["nome"] == nome_indice:
@@ -75,8 +73,10 @@ def opcao_menu(menu):
                             continue
                         else:
                             break
+                    opcao = int(menu_cliente)
                     if opcao == 1:
                         while True:
+                            #extrato = []
                             try:
                                 deposito = input("Valor do deposito: ").strip()
                                 valor = float(deposito)
@@ -87,20 +87,19 @@ def opcao_menu(menu):
                                 print("Valor deve ser positivo!\n")
                                 continue
                             else:
-                                new_saldo = adicionar_clientes.pesquisar_clientes(nome)
-                                if new_saldo:
-                                    caminho = open(f"clientes/{nome}/saldo.txt", "r")
-                                    saldo = caminho.read()
-                                    caminho.close()
-                                    if saldo == "":
-                                        saldo = 0
-                                    saldo = float(saldo)
-                                    valor += saldo
-                                adicionar_clientes.adiciona_saldo(nome, valor)
-                                adicionar_clientes.registro_para_extrato(nome, deposito, "deposito", valor)
-                                print(f"Deposito de R${deposito} realizado com sucesso!\n")
-
-                                break
+                                print("TIPO DEPOSITO",type(deposito))
+                                for pessoa in nome_ind["clientes"]:
+                                    if pessoa["nome"] == nome_indice:
+                                        print("\nTIPO SALDO",type(pessoa["saldo"]))
+                                        new_saldo = pessoa["saldo"] + valor
+                                        pessoa["saldo"] = new_saldo
+                                        data = datetime.now().strftime("%d/%m/%y - %H:%M")
+                                        pessoa["extrato"].append({"DATA": data,"tipo": "DEPOSITO", "valor": valor})
+                                        with open("local_clientes/dados_clientes.json", "w", encoding="utf-8") as arquivo:
+                                            json.dump(nome_ind, arquivo, indent=4, ensure_ascii=False)
+                                        print(f"Deposito de R${valor:.2f} realizado com sucesso!\n")
+                                        break
+                            break
                     elif opcao == 2:
                         while True:
                             try:
@@ -113,87 +112,59 @@ def opcao_menu(menu):
                                 print("Valor deve ser positivo!\n")
                                 continue
                             else:
-                                new_saldo = adicionar_clientes.pesquisar_clientes(nome)
-                                if new_saldo:
-                                    caminho = open(f"clientes/{nome}/saldo.txt", "r")
-                                    saldo = caminho.read()
-                                    caminho.close()
-                                    if saldo == "":
-                                        saldo = 0
-                                        saldo = float(saldo)
-                                    if valor > float(saldo):
-                                        print("Saldo insuficiente!\n")
-                                        print(f"Saldo atual: R${float(saldo):.2f}\n")
-                                        break
-                                    else:
-                                        valor = float(saldo) - valor
-                                        verificacao = adicionar_clientes.adiciona_saldo(nome, valor, "saque")
-                                        if not verificacao:continue
-                                        print(f"Saque de R${saque} realizado com sucesso!\n")
-                                        break
+                                for pessoa in nome_ind["clientes"]:
+                                    if pessoa["nome"] == nome_indice:
+                                        if pessoa["saldo"] < valor:
+                                            print(f"Saldo insuficiente! Saldo atual: R${pessoa["saldo"]:.2f}\n")
+                                            break
+                                        else:
+                                            pessoa["saldo"] -= valor
+                                            data = datetime.now().strftime("%d%m%y - %H:%M")
+                                            pessoa["extrato"].append({"DATA": data,"tipo": "SAQUE", "valor": valor})
+                                            with open("local_clientes/dados_clientes.json", "w", encoding="utf-8") as arquivo:
+                                                json.dump(nome_ind, arquivo, indent=4, ensure_ascii=False)
+                                            print(f"Saque de R${valor:.2f} realizado com sucesso!\n")
+                                            break
+                            break
                     elif opcao == 3:
-                        extrato = adicionar_clientes.extrato(nome)
-                        if extrato == "":
-                            print("Nao ha movimentacoes!\n")
-                        else:
-                            print(f"Extrato do cliente {nome}:\n{extrato}\n")
-                            continue
+                        for pessoa in nome_ind["clientes"]:
+                            if pessoa["nome"] == nome_indice:
+                                if pessoa["extrato"] == []:
+                                    print(f"\nCliente {nome_indice} nao possui movimentacoes!\n")
+                                    break
+                                else:
+                                    for leitura_extrato in pessoa["extrato"]:
+                                        print(f"{leitura_extrato["DATA"]} - Tipo: {leitura_extrato["tipo"]} - valor: R${leitura_extrato["valor"]:.2f}\n")
+                                    print("\nLeitura finalizada!\n")
+                                    break
                     elif opcao == 4:
                         print("Voltando ao menu principal!\n")
                         return True
     elif menu == 3:
-        clientes = os.listdir("clientes")
-        print(f"\nClientes cadastrados: {len(clientes)}\n")
         posicao = 1
-        teste_dicionario = []
-        while True:
-            print("1 - Listar clientes\n"
-                  "2 - Selecionar cliente\n"
-                  "3 - Voltar ao menu principal\n")
-            while True:
-                opcao_menu_3 = input("Opcao do menu-> ").strip().upper()
-                opcao_menu_3 = valida_entrada.validar_num(opcao_menu_3)
-                if not opcao_menu_3:
+        if not os.path.exists("local_clientes"):
+            print("Primeiro deve adicionar pelo menos 1 cliente!\n")
+            return True
+        elif not os.path.exists("local_clientes/dados_clientes.json"):
+            print("Dados de clientes nao existem, deve adicionar um cliente!\n")
+            return True
+        nome_ind = adicionar_clientes.retorna_conteudo()
+        if not nome_ind["clientes"]:
+            print("Nao ah clientes cadastrados!\n")
+            return True
+        else:
+            print("="*20)
+            print("\nLista de clientes cadastrados: \n")
+            print("="*20,"\n")
+            for pessoa in nome_ind["clientes"]:
+                if pessoa["nome"]:
+                    print(f"{posicao} - {pessoa["nome"]}")
+                    posicao += 1
                     continue
                 else:
                     break
-            if opcao_menu_3 == 1:
-                for lista in clientes:
-                    arquivo = open(f"clientes/{lista}/saldo.txt", "r")
-                    saldo_geral = arquivo.read()
-                    arquivo.close()
-                    print(f"{posicao} - {lista} \n") #Saldo: R${float(saldo_geral):.2f}\n")
-                    posicao+= 1
-                    teste_dicionario.append({"nome": lista, "saldo": saldo_geral})
-            elif opcao_menu_3 == 2:
-                while True:
-                    indice_cliente = input("Digite o numero/nome do cliente: ").strip().upper()
-                    if indice_cliente.isdigit():
-                        passou_num = valida_entrada.validar_num(indice_cliente)
-                        if not passou_num:
-                            continue
-                        else:
-                            if int(indice_cliente) > len(clientes):
-                                print("Indeice nao encontrado!\n")
-                                continue
-                            else:
-                                print(f"\nCliente selecionado: {teste_dicionario[int(indice_cliente) - 1]['nome']}\nSALDO: R${float(teste_dicionario[int(indice_cliente) - 1]['saldo']):.2f}\n")  # Exemplo: selecionando o cliente
-                                break
-                    else:
-                        passou_num = indice_cliente.split()
-                        permitido = valida_entrada.validar_str(passou_num)
-                        if not permitido:
-                            continue
-                        if not adicionar_clientes.pesquisar_clientes(indice_cliente):
-                            print("Nome de cliente incorreto ou nao cadastrado!")
-                            continue
-                        else:
-                            for nomes in teste_dicionario:
-                                if nomes["nome"] == indice_cliente:
-                                    print(f"\n Cliente: {nomes['nome']}"
-                                          f"\n SALDO: R$ {float(nomes['saldo'])}")
-                                    break
-                    break
+            print("\n\n")
+            return True
     elif menu == 4:
         print("\nFINALIZANDO BANCO IMAGINARIO\n")
         print("\n== FIM DA EXECUCAO TESTE ==\n")
