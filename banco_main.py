@@ -12,10 +12,11 @@ while True:
       if int(menu) <= 0 or int(menu) > 4:
             print("ERROR! Valor invalido!\n")
             continue
-      else:
-            menu = valida_entrada.validar_num(menu)     
-      sair = opcoes_menu.opcao_menu(menu)
-      if sair == False:
+      elif not valida_entrada.validar_num(menu):
+            print("Opcao incoreta!\n")
+            continue
+      sair = opcoes_menu.opcao_menu(int(menu))
+      if not sair:
             print("ENCERRANDO BANCO!\n")
             break
       else:
