@@ -1,15 +1,15 @@
 import os
 import adicionar_clientes
 import valida_entrada
+import json
 
 def opcao_menu(menu):
     #adiciona novos clientes, caso o cliente ja exista, ele nao sera adicionado.
     if menu == 1:
         while True:
-            nome = input("Nome completo: ").strip().upper().split()
+            nome = input("Nome completo: ").strip().upper()
             escolha = valida_entrada.validar_str(nome)
             if escolha:
-                nome = " ".join(nome)
                 adicionar_clientes.novo_cliente(nome)
                 print("Cliente adicionado com sucesso!\n")
                 return True
@@ -19,112 +19,128 @@ def opcao_menu(menu):
     #ele busca pelo indice, caso seja digitado um nome, ele busca pelo nome.
     elif menu == 2:
         while True:
-            print("\nInforme o nome do cliente ou numero de cadastro: \n")
-            nome_indice = input("Nome completo/indice: ").strip().upper()
-            if nome_indice.isdigit():
-                passou_num = valida_entrada.validar_num(nome_indice)
-                passou = True
-            else:
-                nome = nome_indice.split()
-                passou = valida_entrada.validar_str(nome)
-            if passou:
-                nome = " ".join(nome_indice)
-                if passou_num:
-                    clientes = os.listdir("clientes")
-                    if int(nome_indice) > len(clientes):
-                        print("Indice nao encontrado!\n")
+            while True:
+                print("\nInforme o nome do cliente ou numero de cadastro: \n")
+                nome_indice = input("Nome completo/indice: ").strip().upper()
+                passou = False
+                with open("local_clientes/dados_clientes.json", "r", encoding="utf-8") as arquivo:
+                    nome_ind = json.load(arquivo)
+                print("\nANTES DO IF DIGITO\n")
+                if nome_indice.isdigit():
+                    print("\nENTROU NO IF DIGITO\n")
+                    digito_valido = valida_entrada.validar_num(nome_indice)
+                    tam = len(nome_ind["clientes"])
+                    if int(nome_indice) < 1 or int(nome_indice) > tam:
+                        print(f"Indice invalido! Total de indices cadastrados: {tam}")
                         continue
+                    elif digito_valido:
+                            nome = nome_ind["clientes"][int(nome_indice)-1]["nome"]
+                            passou = True
+                            break
                     else:
-                        nome = clientes[int(nome_indice) - 1]
-                else:
-                    nome = nome_indice
-                cliente = adicionar_clientes.pesquisar_clientes(nome)
-                if not cliente:
-                    print("Cliente nao encontrado!\n")
-                    return True
-                else:
-                    print(f"Cliente {nome} encontrado!\n")
-                    #submenu do cliente, onde ele pode fazer deposito, 
-                    #saque, ver extrato ou voltar ao menu principal.
+                        continue
+                palavra_valida = valida_entrada.validar_str(nome_indice)
+                print("\nANTES DO IF PALAVRA\n")
+                if palavra_valida:
+                    print("\nDENTRO DO IF PALAVRA\n")
+                    teste_nome = False
+                    for pessoa in nome_ind["clientes"]:
+                        if pessoa["nome"] == nome_indice:
+                            passou = True
+                            teste_nome = True
+                            break
+                    if not teste_nome:
+                        print("Nome nao encontrado!\n")
+                        continue
+                    elif teste_nome:
+                        print("Sucesso nome encontrado!\n")
+                        break
+                    else:
+                        print("Nome ou indice incorretos!\n")
+                        continue
+            if passou:
+                print(f"Cliente {nome_indice} encontrado!\n")
+                #submenu do cliente, onde ele pode fazer deposito, 
+                #saque, ver extrato ou voltar ao menu principal.
+                while True:
+                    print("MENU DO CLIENTE: \n" 
+                    "1 - Deposito\n"
+                    "2 - Saque\n" 
+                    "3 - Extrato\n"
+                    "4 - Voltar ao menu principal\n")
                     while True:
-                        print("MENU DO CLIENTE: \n" 
-                        "1 - Deposito\n"
-                        "2 - Saque\n" 
-                        "3 - Extrato\n"
-                        "4 - Voltar ao menu principal\n")
+                        menu_cliente = input("Opcao: ").strip().lower()
+                        opcao = valida_entrada.validar_num(menu_cliente)
+                        if not opcao:
+                            continue
+                        else:
+                            break
+                    if opcao == 1:
                         while True:
-                            menu_cliente = input("Opcao: ").strip().lower()
-                            opcao = valida_entrada.validar_num(menu_cliente)
-                            if not opcao:
+                            try:
+                                deposito = input("Valor do deposito: ").strip()
+                                valor = float(deposito)
+                            except ValueError:
+                                print("Somente numeros!\n")
+                                continue
+                            if valor <=0:
+                                print("Valor deve ser positivo!\n")
                                 continue
                             else:
-                                break
-                        if opcao == 1:
-                            while True:
-                                try:
-                                    deposito = input("Valor do deposito: ").strip()
-                                    valor = float(deposito)
-                                except ValueError:
-                                    print("Somente numeros!\n")
-                                    continue
-                                if valor <=0:
-                                    print("Valor deve ser positivo!\n")
-                                    continue
-                                else:
-                                    new_saldo = adicionar_clientes.pesquisar_clientes(nome)
-                                    if new_saldo:
-                                        caminho = open(f"clientes/{nome}/saldo.txt", "r")
-                                        saldo = caminho.read()
-                                        caminho.close()
-                                        if saldo == "":
-                                            saldo = 0
-                                        saldo = float(saldo)
-                                        valor += saldo
-                                    adicionar_clientes.adiciona_saldo(nome, valor)
-                                    adicionar_clientes.registro_para_extrato(nome, deposito, "deposito", valor)
-                                    print(f"Deposito de R${deposito} realizado com sucesso!\n")
+                                new_saldo = adicionar_clientes.pesquisar_clientes(nome)
+                                if new_saldo:
+                                    caminho = open(f"clientes/{nome}/saldo.txt", "r")
+                                    saldo = caminho.read()
+                                    caminho.close()
+                                    if saldo == "":
+                                        saldo = 0
+                                    saldo = float(saldo)
+                                    valor += saldo
+                                adicionar_clientes.adiciona_saldo(nome, valor)
+                                adicionar_clientes.registro_para_extrato(nome, deposito, "deposito", valor)
+                                print(f"Deposito de R${deposito} realizado com sucesso!\n")
 
-                                    break
-                        elif opcao == 2:
-                            while True:
-                                try:
-                                    saque = input("Valor a sacar: R$").strip()
-                                    valor = float(saque)
-                                except ValueError:
-                                    print("Digite apenas numeros!\n")
-                                    continue
-                                if valor <= 0:
-                                    print("Valor deve ser positivo!\n")
-                                    continue
-                                else:
-                                    new_saldo = adicionar_clientes.pesquisar_clientes(nome)
-                                    if new_saldo:
-                                        caminho = open(f"clientes/{nome}/saldo.txt", "r")
-                                        saldo = caminho.read()
-                                        caminho.close()
-                                        if saldo == "":
-                                            saldo = 0
-                                            saldo = float(saldo)
-                                        if valor > float(saldo):
-                                            print("Saldo insuficiente!\n")
-                                            print(f"Saldo atual: R${float(saldo):.2f}\n")
-                                            break
-                                        else:
-                                            valor = float(saldo) - valor
-                                            adicionar_clientes.adiciona_saldo(nome, valor)
-                                            print(f"Saque de R${saque} realizado com sucesso!\n")
-                                            adicionar_clientes.registro_para_extrato(nome, saque, "saque", valor)
-                                            break
-                        elif opcao == 3:
-                            extrato = adicionar_clientes.extrato(nome)
-                            if extrato == "":
-                                print("Nao ha movimentacoes!\n")
-                            else:
-                                print(f"Extrato do cliente {nome}:\n{extrato}\n")
+                                break
+                    elif opcao == 2:
+                        while True:
+                            try:
+                                saque = input("Valor a sacar: R$").strip()
+                                valor = float(saque)
+                            except ValueError:
+                                print("Digite apenas numeros!\n")
                                 continue
-                        elif opcao == 4:
-                            print("Voltando ao menu principal!\n")
-                            return True
+                            if valor <= 0:
+                                print("Valor deve ser positivo!\n")
+                                continue
+                            else:
+                                new_saldo = adicionar_clientes.pesquisar_clientes(nome)
+                                if new_saldo:
+                                    caminho = open(f"clientes/{nome}/saldo.txt", "r")
+                                    saldo = caminho.read()
+                                    caminho.close()
+                                    if saldo == "":
+                                        saldo = 0
+                                        saldo = float(saldo)
+                                    if valor > float(saldo):
+                                        print("Saldo insuficiente!\n")
+                                        print(f"Saldo atual: R${float(saldo):.2f}\n")
+                                        break
+                                    else:
+                                        valor = float(saldo) - valor
+                                        verificacao = adicionar_clientes.adiciona_saldo(nome, valor, "saque")
+                                        if not verificacao:continue
+                                        print(f"Saque de R${saque} realizado com sucesso!\n")
+                                        break
+                    elif opcao == 3:
+                        extrato = adicionar_clientes.extrato(nome)
+                        if extrato == "":
+                            print("Nao ha movimentacoes!\n")
+                        else:
+                            print(f"Extrato do cliente {nome}:\n{extrato}\n")
+                            continue
+                    elif opcao == 4:
+                        print("Voltando ao menu principal!\n")
+                        return True
     elif menu == 3:
         clientes = os.listdir("clientes")
         print(f"\nClientes cadastrados: {len(clientes)}\n")
