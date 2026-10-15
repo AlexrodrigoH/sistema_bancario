@@ -3,6 +3,7 @@ import adicionar_clientes
 import valida_entrada
 import json
 from datetime import datetime
+import clientes
 
 def opcao_menu(menu):
     #adiciona novos clientes, caso o cliente ja exista, ele nao sera adicionado.
@@ -11,7 +12,9 @@ def opcao_menu(menu):
             nome = input("Nome completo: ").strip().upper()
             escolha = valida_entrada.validar_str(nome)
             if escolha:
-                adicionar_clientes.novo_cliente(nome)
+                new_cliente = clientes.Clientes(nome)
+                clientes.Clientes.atribui_valor(new_cliente)
+                adicionar_clientes.novo_cliente(new_cliente)
                 print("Cliente adicionado com sucesso!\n")
                 return True
             else:
@@ -87,14 +90,18 @@ def opcao_menu(menu):
                                 print("Valor deve ser positivo!\n")
                                 continue
                             else:
-                                print("TIPO DEPOSITO",type(deposito))
                                 for pessoa in nome_ind["clientes"]:
                                     if pessoa["nome"] == nome_indice:
-                                        print("\nTIPO SALDO",type(pessoa["saldo"]))
+                                        print(f"\nTIPO SALDO {pessoa["saldo"]}")
                                         new_saldo = pessoa["saldo"] + valor
+                                        new_atributo = clientes.Clientes_acoes("DEPOSITO", valor)
                                         pessoa["saldo"] = new_saldo
                                         data = datetime.now().strftime("%d/%m/%y - %H:%M")
-                                        pessoa["extrato"].append({"DATA": data,"tipo": "DEPOSITO", "valor": valor})
+                                        #movimentacao = new_atributo.atributo_cliente()
+                                        movimentacao = {"DATA": data}
+                                        movimentacao.update(new_atributo.atributo_cliente())
+                                        movimentacao["SALDO"] = pessoa["saldo"]
+                                        pessoa["extrato"].append(movimentacao)
                                         with open("local_clientes/dados_clientes.json", "w", encoding="utf-8") as arquivo:
                                             json.dump(nome_ind, arquivo, indent=4, ensure_ascii=False)
                                         print(f"Deposito de R${valor:.2f} realizado com sucesso!\n")
@@ -119,8 +126,12 @@ def opcao_menu(menu):
                                             break
                                         else:
                                             pessoa["saldo"] -= valor
-                                            data = datetime.now().strftime("%d%m%y - %H:%M")
-                                            pessoa["extrato"].append({"DATA": data,"tipo": "SAQUE", "valor": valor})
+                                            novo_mov = clientes.Clientes_acoes("SAQUE", valor)
+                                            data = datetime.now().strftime("%d/%m/%y - %H:%M")
+                                            movimentacao = {"DATA": data}
+                                            movimentacao.update(novo_mov.atributo_cliente())
+                                            movimentacao["SALDO"] = pessoa["saldo"]
+                                            pessoa["extrato"].append(movimentacao)
                                             with open("local_clientes/dados_clientes.json", "w", encoding="utf-8") as arquivo:
                                                 json.dump(nome_ind, arquivo, indent=4, ensure_ascii=False)
                                             print(f"Saque de R${valor:.2f} realizado com sucesso!\n")
@@ -134,7 +145,7 @@ def opcao_menu(menu):
                                     break
                                 else:
                                     for leitura_extrato in pessoa["extrato"]:
-                                        print(f"{leitura_extrato["DATA"]} - Tipo: {leitura_extrato["tipo"]} - valor: R${leitura_extrato["valor"]:.2f}\n")
+                                        print(f"{leitura_extrato["DATA"]} - Tipo: {leitura_extrato["tipo"]} - valor: R${leitura_extrato["valor"]:.2f} - SALDO ATUAL:  R${leitura_extrato["SALDO"]:.2f}\n")
                                     print("\nLeitura finalizada!\n")
                                     break
                     elif opcao == 4:
