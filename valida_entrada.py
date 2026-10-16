@@ -18,3 +18,5 @@ def validar_num(valido_num):
         print("ERROR! Somente numeros positivos!\n")
         return False
     return True
+def validar_moeda():
+     pass
