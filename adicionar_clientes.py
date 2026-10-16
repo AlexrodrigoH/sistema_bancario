@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 import json
+import clientes
 #Cria um novo cliente, criando uma pasta com o nome do cliente e dois arquivos dentro dela, 
 # um para o saldo e outro para o extrato.
 def novo_cliente(nome):
@@ -12,7 +13,7 @@ def novo_cliente(nome):
     with open("local_clientes/dados_clientes.json", "r", encoding="utf-8") as arquivo:
         cliente_arquivo = json.load(arquivo)
         cliente = cliente_arquivo["clientes"]
-    cliente.append({"nome": nome, "saldo": 0, "extrato":[]})
+    cliente.append({"nome": nome.nome, "saldo": nome.saldo, "extrato":[]})
     with open("local_clientes/dados_clientes.json", "w", encoding="utf-8") as arquivo:
         json.dump(cliente_arquivo, arquivo, indent=4, ensure_ascii=False)
 #Adiciona saldo ao cliente, caso o cliente nao exista nem chega a esta funcao, 
