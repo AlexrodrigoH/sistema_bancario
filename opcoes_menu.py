@@ -82,6 +82,7 @@ def opcao_menu(menu):
                             #extrato = []
                             try:
                                 deposito = input("Valor do deposito: ").strip()
+                                deposito = deposito.replace(",", ".")
                                 valor = float(deposito)
                             except ValueError:
                                 print("Somente numeros!\n")
@@ -92,15 +93,18 @@ def opcao_menu(menu):
                             else:
                                 for pessoa in nome_ind["clientes"]:
                                     if pessoa["nome"] == nome_indice:
-                                        print(f"\nTIPO SALDO {pessoa["saldo"]}")
-                                        new_saldo = pessoa["saldo"] + valor
+                                        clientes.Clientes(pessoa["nome"], pessoa["saldo"])
                                         new_atributo = clientes.Clientes_acoes("DEPOSITO", valor)
-                                        pessoa["saldo"] = new_saldo
+                                        new_saldo = clientes.Clientes(nome_indice, pessoa["saldo"])
                                         data = datetime.now().strftime("%d/%m/%y - %H:%M")
-                                        #movimentacao = new_atributo.atributo_cliente()
                                         movimentacao = {"DATA": data}
                                         movimentacao.update(new_atributo.atributo_cliente())
-                                        movimentacao["SALDO"] = pessoa["saldo"]
+                                        confirmacao = new_atributo.executar(new_saldo)
+                                        if not confirmacao:
+                                            print("\n\nFalsa validacao\n\n")
+                                            break
+                                        movimentacao["SALDO"] = new_saldo.saldo
+                                        pessoa["saldo"] = new_saldo.saldo
                                         pessoa["extrato"].append(movimentacao)
                                         with open("local_clientes/dados_clientes.json", "w", encoding="utf-8") as arquivo:
                                             json.dump(nome_ind, arquivo, indent=4, ensure_ascii=False)
@@ -111,6 +115,7 @@ def opcao_menu(menu):
                         while True:
                             try:
                                 saque = input("Valor a sacar: R$").strip()
+                                saque = saque.replace(",",".")
                                 valor = float(saque)
                             except ValueError:
                                 print("Digite apenas numeros!\n")
