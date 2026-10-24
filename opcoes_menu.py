@@ -1,6 +1,7 @@
 import os
 import adicionar_clientes
-import valida_entrada
+#import valida_entrada
+import validar_entradas
 import json
 from datetime import datetime
 import clientes
@@ -10,7 +11,8 @@ def opcao_menu(menu):
     if menu == 1:
         while True:
             nome = input("Nome completo: ").strip().upper()
-            escolha = valida_entrada.validar_str(nome)
+            referencia = validar_entradas.Validar_entradas(nome)
+            escolha = referencia.validar_str()
             if escolha:
                 new_cliente = clientes.Clientes(nome)
                 clientes.Clientes.atribui_valor(new_cliente)
@@ -31,7 +33,8 @@ def opcao_menu(menu):
                 #print("\nANTES DO IF DIGITO\n")
                 if nome_indice.isdigit():
                     #print("\nENTROU NO IF DIGITO\n")
-                    digito_valido = valida_entrada.validar_num(nome_indice)
+                    referencia = validar_entradas.Validar_entradas(nome_indice)
+                    digito_valido = referencia.validar_str()
                     tam = len(nome_ind["clientes"])
                     if int(nome_indice) < 1 or int(nome_indice) > tam:
                         print(f"Indice invalido! Total de indices cadastrados: {tam}")
@@ -42,7 +45,7 @@ def opcao_menu(menu):
                             break
                     else:
                         continue
-                palavra_valida = valida_entrada.validar_str(nome_indice)
+                palavra_valida = referencia.validar_str()
                 if palavra_valida:
                     teste_nome = False
                     for pessoa in nome_ind["clientes"]:
@@ -71,7 +74,7 @@ def opcao_menu(menu):
                     "4 - Voltar ao menu principal\n")
                     while True:
                         menu_cliente = input("Opcao: ").strip().lower()
-                        opcao = valida_entrada.validar_num(menu_cliente)
+                        opcao = referencia.validar_str()
                         if not opcao:
                             continue
                         else:
