@@ -1,6 +1,5 @@
 import os
 import adicionar_clientes
-#import valida_entrada
 import validar_entradas
 import json
 from datetime import datetime
@@ -8,10 +7,11 @@ import clientes
 
 def opcao_menu(menu):
     #adiciona novos clientes, caso o cliente ja exista, ele nao sera adicionado.
+    referencia = validar_entradas.Validar_entradas(menu)
     if menu == 1:
         while True:
             nome = input("Nome completo: ").strip().upper()
-            referencia = validar_entradas.Validar_entradas(nome)
+            referencia.dados = nome
             escolha = referencia.validar_str()
             if escolha:
                 new_cliente = clientes.Clientes(nome)
@@ -28,41 +28,35 @@ def opcao_menu(menu):
             while True:
                 print("\nInforme o nome do cliente ou numero de cadastro: \n")
                 nome_indice = input("Nome completo/indice: ").strip().upper()
-                passou = False
+                referencia.dados = nome_indice
+                passou = referencia.validar_num()
                 nome_ind = adicionar_clientes.retorna_conteudo()
-                #print("\nANTES DO IF DIGITO\n")
-                if nome_indice.isdigit():
-                    #print("\nENTROU NO IF DIGITO\n")
-                    referencia = validar_entradas.Validar_entradas(nome_indice)
-                    digito_valido = referencia.validar_str()
+                cliente_encontrado = False
+                if passou:
                     tam = len(nome_ind["clientes"])
                     if int(nome_indice) < 1 or int(nome_indice) > tam:
                         print(f"Indice invalido! Total de indices cadastrados: {tam}")
                         continue
-                    elif digito_valido:
-                            nome_indice = nome_ind["clientes"][int(nome_indice)-1]["nome"]
-                            passou = True
-                            break
                     else:
-                        continue
-                palavra_valida = referencia.validar_str()
-                if palavra_valida:
-                    teste_nome = False
-                    for pessoa in nome_ind["clientes"]:
-                        if pessoa["nome"] == nome_indice:
-                            passou = True
-                            teste_nome = True
+                            nome_indice = nome_ind["clientes"][int(nome_indice)-1]["nome"]
+                            cliente_encontrado = True
+                            referencia.dados = nome_indice
                             break
-                    if not teste_nome:
+                if not passou:
+                    nome_valido = referencia.validar_str()
+                    if nome_valido:
+                        for pessoa in nome_ind["clientes"]:
+                            if pessoa["nome"] == nome_indice:
+                                passou = True
+                                cliente_encontrado = True
+                                break
+                    if not cliente_encontrado:
                         print("Nome nao encontrado!\n")
                         continue
-                    elif teste_nome:
+                    elif cliente_encontrado:
                         print("Sucesso nome encontrado!\n")
                         break
-                    else:
-                        print("Nome ou indice incorretos!\n")
-                        continue
-            if passou:
+            if cliente_encontrado:
                 print(f"Cliente {nome_indice} encontrado!\n")
                 #submenu do cliente, onde ele pode fazer deposito, 
                 #saque, ver extrato ou voltar ao menu principal.
