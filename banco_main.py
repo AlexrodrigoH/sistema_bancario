@@ -1,5 +1,6 @@
 import opcoes_menu
 import valida_entrada
+import validar_entradas
 
 print("*** Bem vindo ao BANCO IMAGINARIO*** \n\n")
 
@@ -9,11 +10,11 @@ while True:
             "3 - ver lista de clientes\n" 
             "4 - Sair/Finalizar")
       menu = input("Opcao: ").strip().lower()
-      if int(menu) <= 0 or int(menu) > 4:
-            print("ERROR! Valor invalido!\n")
+      referencia = validar_entradas.Validar_entradas(menu)
+      if not referencia.validar_num():
             continue
-      elif not valida_entrada.validar_num(menu):
-            print("Opcao incoreta!\n")
+      if int(menu) <= 0 or int(menu) > 4:
+            print("ERROR 001M- Opcao invalida!")
             continue
       sair = opcoes_menu.opcao_menu(int(menu))
       if not sair:
