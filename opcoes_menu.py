@@ -76,13 +76,11 @@ def opcao_menu(menu):
                     opcao = int(menu_cliente)
                     if opcao == 1:
                         while True:
-                            #extrato = []
-                            try:
-                                deposito = input("Valor do deposito: ").strip()
-                                deposito = deposito.replace(",", ".")
-                                valor = float(deposito)
-                            except ValueError:
-                                print("Somente numeros!\n")
+                            referencia.dados = input("Valor do deposito: ").strip()
+                            deposito = referencia.validar_monetario()
+                            if deposito:
+                                valor = deposito
+                            else:
                                 continue
                             if valor <=0:
                                 print("Valor deve ser positivo!\n")
