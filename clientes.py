@@ -1,4 +1,5 @@
-import os
+import json
+import adicionar_clientes
 class Clientes:
     def __init__(self, nome = "", saldo = 0.0):
         self.nome = nome
@@ -32,5 +33,14 @@ class Clientes_registro:
     def __init__(self, extrato):
         self.extrato = extrato
     def registro(self):
-        return {"extrato": self.extrato}
-        
+        leitura = adicionar_clientes.retorna_conteudo()
+        for item in leitura["clientes"]:
+            if item["nome"] == self.extrato:
+                if item["extrato"] == []:
+                    print(f"Cliente {self.extrato} nao possui registros!")
+                    break
+                else:
+                    for leitura_extrato in item["extrato"]:
+                        print(f"DATA: {leitura_extrato["DATA"]}\nMOVIMENTO: {leitura_extrato["tipo"]}\nVALOR: R${leitura_extrato["valor"]}\nSALDO: {leitura_extrato["SALDO"]}\n")
+                    print("--LEITURA FINALIZADA--")
+                    break     
