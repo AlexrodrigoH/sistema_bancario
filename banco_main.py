@@ -1,5 +1,4 @@
 import opcoes_menu
-import valida_entrada
 import validar_entradas
 
 print("*** Bem vindo ao BANCO IMAGINARIO*** \n\n")

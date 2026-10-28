@@ -13,9 +13,10 @@ class Clientes_acoes:
     def atributo_cliente(self):
         return {"tipo": self.tipo, "valor": self.valor}
     def executar(self, cliente):
+        print(f"\n\nVALOR EM cliente.executar {cliente}\n\n")
         if self.tipo == "DEPOSITO":
             if self.valor <= 0:
-                print(f"Valores {self.valor} nao sao permitidos!\n")
+                print(f"ERROR - 001CA - Valores {self.valor} nao sao permitidos!\n")
                 return False
             else:
                 cliente.saldo += self.valor

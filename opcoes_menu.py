@@ -68,28 +68,26 @@ def opcao_menu(menu):
                     "4 - Voltar ao menu principal\n")
                     while True:
                         menu_cliente = input("Opcao: ").strip().lower()
-                        opcao = referencia.validar_str()
-                        if not opcao:
+                        referencia.dados = menu_cliente
+                        opcao_submenu = referencia.validar_num()
+                        if not opcao_submenu:
                             continue
-                        else:
-                            break
+                        elif int(opcao_submenu) <= 0 or int(opcao_submenu) > 4:
+                            print("ERROR - 001OM - Opcao invalida!")
+                            continue
+                        else: break  
                     opcao = int(menu_cliente)
                     if opcao == 1:
                         while True:
                             referencia.dados = input("Valor do deposito: ").strip()
                             deposito = referencia.validar_monetario()
                             if deposito:
-                                valor = deposito
-                            else:
-                                continue
-                            if valor <=0:
-                                print("Valor deve ser positivo!\n")
-                                continue
-                            else:
+                                valor = referencia.dados
+                                clientes_ref = clientes.Clientes_acoes("DEPOSITO", valor)
                                 for pessoa in nome_ind["clientes"]:
                                     if pessoa["nome"] == nome_indice:
                                         clientes.Clientes(pessoa["nome"], pessoa["saldo"])
-                                        new_atributo = clientes.Clientes_acoes("DEPOSITO", valor)
+                                        new_atributo = clientes.Clientes_acoes("DEPOSITO", referencia.arquivar)
                                         new_saldo = clientes.Clientes(nome_indice, pessoa["saldo"])
                                         data = datetime.now().strftime("%d/%m/%y - %H:%M")
                                         movimentacao = {"DATA": data}
@@ -103,8 +101,10 @@ def opcao_menu(menu):
                                         pessoa["extrato"].append(movimentacao)
                                         with open("local_clientes/dados_clientes.json", "w", encoding="utf-8") as arquivo:
                                             json.dump(nome_ind, arquivo, indent=4, ensure_ascii=False)
-                                        print(f"Deposito de R${valor:.2f} realizado com sucesso!\n")
+                                        print(f"Deposito de R${valor} realizado com sucesso!\n")
                                         break
+                            else:
+                                continue   
                             break
                     elif opcao == 2:
                         while True:
