@@ -138,19 +138,14 @@ def opcao_menu(menu):
                                             break
                             break
                     elif opcao == 3:
-                        for pessoa in nome_ind["clientes"]:
-                            if pessoa["nome"] == nome_indice:
-                                if pessoa["extrato"] == []:
-                                    print(f"\nCliente {nome_indice} nao possui movimentacoes!\n")
-                                    break
-                                else:
-                                    for leitura_extrato in pessoa["extrato"]:
-                                        print(f"{leitura_extrato["DATA"]} - Tipo: {leitura_extrato["tipo"]} - valor: R${leitura_extrato["valor"]:.2f} - SALDO ATUAL:  R${leitura_extrato["SALDO"]:.2f}\n")
-                                    print("\nLeitura finalizada!\n")
-                                    break
+                        referencia_registro = clientes.Clientes_registro(nome_indice)
+                        referencia_registro.registro()
                     elif opcao == 4:
                         print("Voltando ao menu principal!\n")
                         return True
+            if not cliente_encontrado:
+                print(f"Cliente {nome_indice} nao encontrado!")
+                break
     elif menu == 3:
         posicao = 1
         if not os.path.exists("local_clientes"):
