@@ -37,7 +37,6 @@ class Validar_entradas:
     #Validacao da estrutura monetaria
     def validar_monetario(self):
         valor = self.dados
-        cont = 0
         while valor:
             if valor[0] == "0":
                 valor = valor[1:]
@@ -51,17 +50,25 @@ class Validar_entradas:
             if caractere not in caractere_permitido:
                 print("ERROR - 007V - Valor invalido!")
                 return False
+        temporario = valor.replace(",","").replace(".","")
+        if not temporario.isdigit():
+            print("ERROR - 008V - Valor invalido!")
+            return False
+        if temporario.isdigit():
+            if int(temporario) <= 0:
+                print("ERROR - 012V - Valor invalido!")
+                return False
         if len(valor) == 1:
             if valor.isdigit():
                 valor = valor + ".00"
             else:
-                print("ERROR - 008V - Valor invalido!")
+                print("ERROR - 009V - Valor invalido!")
                 return False
         elif len(valor) == 2:
             if valor[-1] in ",.":
                 valor = valor + "00"
             elif valor[0] == "," or valor[0] == ".":
-                print("ERROR - 009V - Valor invalido!")
+                print("ERROR - 010V - Valor invalido!")
                 return False
         elif len(valor) >= 3:
             if valor[-1] in ",.":
@@ -75,8 +82,14 @@ class Validar_entradas:
         valor = valor.replace(",",".")
         try:
             valor = float(valor)
+            self.arquivar = valor
+            print("\n\nTESTE - CONVERSAO VALIDA FLOAT\n\n")
         except ValueError:
-            print("ERROR - 010V - Valor invalido!")
+            print("ERROR - 011V - Valor invalido!")
             return False
         self.dados = f"{valor:,.2f}".replace(",","x").replace(".",",").replace("x",".")
+        print("\n\nVALOR APOS FORMATACAO VISUAL!\n\n")
         return self.dados
+    def armazena_valor_para_salvar(self, arquivar):
+        self.arquivar = float(arquivar)
+        return self.arquivar
